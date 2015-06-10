@@ -1,14 +1,22 @@
 #!/bin/bash
 
+csv2json attendingGuestDB.csv attendingGuestDB.json
 
-source /Users/dan/.bash_profile
+python makeNamePlates.py
+
+cd processed
+rm *.pdf
+
 for F in `find . -type f -name "*svg"`
 do
-    BASE=`basename $F .svg`
-    echo $BASE
-    /Applications/Inkscape.app/Contents/Resources/bin/inkscape --without-gui  \
-    --file=$F               \
-    --export-pdf=$BASE.pdf  \ 
+    BASE=`pwd`/`basename $F .svg`
+    FILE=$BASE.svg
+    PDFFILE=$BASE.pdf
+    /Applications/Inkscape.app/Contents/Resources/script -z -f $FILE -A $PDFFILE
+    echo "Created "$PDFFILE
 done
 
-#pdfjam *.pdf -o TableCards.pdf   PDFJAM seems to mess with the margins.  We'll need another solution.
+cd ..
+
+PDFconcat -o NameTagsAlphabetized.pdf processed/*.pdf
+mv NameTagsAlphabetized.pdf processed/
